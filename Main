@@ -20,9 +20,11 @@ def encode_motor_values(motor1, motor2, motor3):
  
 # Create a socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-def apply_deadzone(value, deadzone=0.1):
+def apply_deadzone(value, deadzone=0.1, maximum=0.9):
     if -deadzone < value < deadzone:
         return 0
+    if -maximum < value < maximum
+        return 0.995
     else:
         return value
 try:
@@ -46,14 +48,13 @@ try:
         #l1_button = joystick.get_button(4)
         
         
-        #adjusts joystick values to [-2000, 2000]
-        throttle_value = right_y * 2000
-        print(throttle_value)
-        motor3_value = left_y  * 2000
+        #adjusts joystick values to [-199, 199]
+        throttle_value = right_y * 200
+        motor3_value = left_y * 200
         
-        #percent modification 
-        left_mod = ((l2_trigger * -1 ) + 1)
-        right_mod = ((r2_trigger * -1 ) + 1)
+        #percent modification adjusted to output [0-1]
+        left_mod = ((l2_trigger + 1) * 0.5)
+        right_mod = ((r2_trigger + 1) * 0.5)
         
         #reduces speed of motors based on mod percent in order to turn 
         motor1_value = throttle_value * left_mod 
@@ -69,8 +70,10 @@ try:
         
         encoded_value = encode_motor_values(motor1_value, motor2_value, motor3_value)
         
+        print(encoded_value)
         
         data = struct.pack('i', encoded_value)
+        
         client_socket.sendall(data) #sends data to Esp32
         
 
